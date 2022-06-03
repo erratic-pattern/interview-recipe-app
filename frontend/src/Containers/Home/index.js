@@ -11,7 +11,9 @@ import LinearProgress from "@material-ui/core/LinearProgress"
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
+
 import * as actions from "../../actions"
+import Recipe from "../Recipe"
 
 const ingredientList = ["flour", "sugar", "salt", "butter", "milk"]
 
@@ -21,6 +23,7 @@ class Home extends Component {
     this.handleSearch = this.handleSearch.bind(this)
     this.handleIngredient = this.handleIngredient.bind(this)
     this.fetchSearch = this.fetchSearch.bind(this)
+    this.handleClickRecipe = this.handleClickRecipe.bind(this)
     this.state = {
       term: "",
       ingredients: ["milk"],
@@ -30,9 +33,13 @@ class Home extends Component {
     const { term, ingredients } = this.state
     this.props.searchRecipes(term, ingredients)
   }
+
   handleSearch(event) {
     const term = event.target.value
     this.setState({ term })
+  }
+  handleClickRecipe(recipe) {
+    this.props.fetchRecipeById(recipe.id)
   }
   handleIngredient(ingredient, event) {
     const { ingredients } = { ...this.state }
@@ -76,7 +83,7 @@ class Home extends Component {
         {recipes && (
           <List>
             {recipes.map((recipe) => (
-              <ListItem key={recipe.id}>
+              <ListItem key={recipe.id} button={true} onClick={() => this.handleClickRecipe(recipe)}>
                 <ListItemText primary={recipe.name} />
               </ListItem>
             ))}
@@ -84,11 +91,7 @@ class Home extends Component {
         )}
         {isLoading && <LinearProgress />}
         <Divider />
-        {/*
-          TODO: Add a recipe component here.
-          I'm expecting you to have it return null or a component based on the redux state, not passing any props from here
-          I want to see how you wire up a component with connect and build actions.
-        */}
+        <Recipe />
       </HomeWrapper>
     )
   }
@@ -103,6 +106,7 @@ const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       searchRecipes: actions.searchRecipes,
+      fetchRecipeById: actions.fetchRecipeById
     },
     dispatch
   )
